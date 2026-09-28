@@ -1,0 +1,49 @@
+#!ipxe
+# Shop boot menu - ENGLISH ONLY (iPXE console font cannot render Arabic).
+# Served over HTTP from your server - you own this file.
+
+set menu-title -- SHOP STATION v1.0 -- Network Boot
+
+:start
+menu ${menu-title}
+item --gap -- ----------------------------------------
+item setup      Install Windows (Station WinPE + Share)
+item st64       Strelec x64 Maintenance (rescue/tools)
+item st86       Strelec x86 Maintenance (old PCs)
+item --gap -- ----------------------------------------
+item local      Boot from local disk (skip network)
+item reboot     Reboot
+choose --default local --timeout 15000 selected || goto local
+goto ${selected}
+
+:setup
+echo Loading Station WinPE...
+kernel http://${next-server}:8080/ipxe/wimboot
+initrd http://${next-server}:8080/winpe/boot.sdi boot.sdi
+initrd http://${next-server}:8080/winpe/boot-pe.wim boot.wim
+boot || goto failed
+
+:st64
+echo Loading Strelec x64 (~440MB)...
+kernel http://${next-server}:8080/ipxe/wimboot
+initrd http://${next-server}:8080/strelec/boot.sdi boot.sdi
+initrd http://${next-server}:8080/strelec/strelec10x64Eng.wim boot.wim
+boot || goto failed
+
+:st86
+echo Loading Strelec x86 (~300MB)...
+kernel http://${next-server}:8080/ipxe/wimboot
+initrd http://${next-server}:8080/strelec/boot.sdi boot.sdi
+initrd http://${next-server}:8080/strelec/strelec10Eng.wim boot.wim
+boot || goto failed
+
+:local
+echo Booting from local disk...
+exit
+
+:reboot
+reboot
+
+:failed
+echo Load failed - check station server.
+prompt --key 0x02 --timeout 10000 Press any key for menu... && goto start

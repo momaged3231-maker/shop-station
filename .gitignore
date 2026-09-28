@@ -1,0 +1,17 @@
+# Large / machine-local / licensed - never commit
+*.iso
+*.wim
+*.sdi
+*.esd
+ISO/
+logs/
+build/
+netboot/ipxe/
+netboot/strelec/
+netboot/winpe/
+tools/adksetup.exe
+tools/adkwinpesetup.exe
+tools/portable/
+tools/git-portable.exe
+tools/gh.zip
+pxe_config.ini
