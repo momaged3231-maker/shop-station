@@ -23,6 +23,8 @@ netsh advfirewall firewall add rule name="Station-DHCP" dir=in action=allow prot
 netsh advfirewall firewall add rule name="Station-TFTP" dir=in action=allow protocol=UDP localport=69
 netsh advfirewall firewall add rule name="Station-HTTP" dir=in action=allow protocol=TCP localport=8080
 netsh advfirewall firewall add rule name="Station-SMB" dir=in action=allow protocol=TCP localport=445
+netsh advfirewall firewall delete rule name="Station-PXEProxy" >nul 2>&1
+netsh advfirewall firewall add rule name="Station-PXEProxy" dir=in action=allow protocol=UDP localport=4011
 echo [*] 3/4 SMB share...
 net share Station=D:\Station /GRANT:Everyone,READ >nul 2>&1
 net share Station | findstr Station

@@ -10,7 +10,7 @@ if (!(Test-Path $copype)) { $copype = Join-Path $kit 'Assessment and Deployment 
 
 # Limited reader account for WinPE clients (isolated deploy LAN only)
 if (!(Get-LocalUser tech -ErrorAction SilentlyContinue)) {
-  New-LocalUser tech -Password (ConvertTo-SecureString 'Station123' -AsPlainText -Force) -PasswordNeverExpires | Out-Null
+  New-LocalUser tech -Password (ConvertTo-SecureString 'CHANGE_ME' -AsPlainText -Force) -PasswordNeverExpires | Out-Null
   Write-Host 'User tech created.'
 }
 icacls 'D:\Station' /grant 'tech:(OI)(CI)R' | Out-Null
@@ -33,16 +33,17 @@ foreach ($p in @('WinPE-WMI','WinPE-NetFX','WinPE-Scripting','WinPE-PowerShell',
     Write-Host "ADD $p"
   } else { Write-Host "SKIP missing $p" }
 }
-$startnet = @'
+$srvIp = ((Select-String -Path 'D:\Station\pxe_config.ini' -Pattern '^\s*server_ip\s*=\s*(\S+)').Matches[0].Groups[1].Value)
+$startnet = @"
 wpeinit
 echo Station WinPE - connecting to server...
-net use S: \\192.168.10.1\Station /user:tech Station123 /persistent:no
+net use S: \\$srvIp\Station /user:tech CHANGE_ME /persistent:no
 echo.
 echo Setup folders: S:\ISO\W11  S:\ISO\W10  S:\ISO\W7
 echo Drivers: S:\Drivers   Apps: S:\Apps
 echo Run S:\ISO\W11\sources\setup.exe to install Windows.
 cmd
-'@
+"@
 $startnet | Out-File "$mount\Windows\System32\startnet.cmd" -Encoding ascii
 $ok = $false
 for ($i = 1; $i -le 5 -and -not $ok; $i++) {
