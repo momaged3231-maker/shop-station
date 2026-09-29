@@ -1,0 +1,10 @@
+verbose 384
+enableinstall on
+keeptempfiles off
+init
+onerror goto :end
+select missing
+install
+onerror goto :end
+:end
+end

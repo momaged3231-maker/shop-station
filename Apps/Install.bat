@@ -36,4 +36,5 @@ echo Open "FaresCD.Com.Offic,Diam,Aio.All2019\2019" and run Office ProPlus Arabi
 
 echo [%date% %time%] DONE >> "%LOG%"
 echo Done. See install.log for details.
+if /i "%~1"=="auto" exit /b 0
 pause
