@@ -15,6 +15,12 @@ echo Requesting admin rights...
 powershell -Command "Start-Process '%~f0' -Verb RunAs"
 exit /b
 )
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+echo [X] Admin rights required - right-click, Run as administrator.
+pause
+exit /b 1
+)
 
 echo [1/4] Mapping server share...
 net use S: \\%SERVER%\%SHARE% /user:%USER% %PASS% /persistent:no >> "%LOG%" 2>&1
@@ -27,8 +33,9 @@ exit /b 1
 echo [2/4] Drivers (SDIO auto - takes a while)...
 S:\Drivers\SDIO\SDIO_x64_R887.exe /script:S:\Drivers\SDIO\auto-install.txt >> "%LOG%" 2>&1
 
-echo [3/4] Programs...
-call S:\Apps\Install.bat auto >> "%LOG%" 2>&1
+echo [3/4] Programs (copy local, then install)...
+robocopy "S:\Apps" "C:\Station-Setup\Apps" /E /XD *FaresCD* /NFL /NDL /NJH /NJS >> "%LOG%" 2>&1
+call "C:\Station-Setup\Apps\Install.bat" auto >> "%LOG%" 2>&1
 
 echo [4/4] Tweaks...
 tzutil /s "Egypt Standard Time" >> "%LOG%" 2>&1
